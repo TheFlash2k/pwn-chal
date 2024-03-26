@@ -1,0 +1,1 @@
+Please replace the contents of `flag.txt` with your own flag.

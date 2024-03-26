@@ -1,0 +1,6 @@
+FROM theflash2k/pwn-chal:latest
+
+RUN apt-get update && \
+    apt-get install -y libseccomp-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

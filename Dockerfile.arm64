@@ -1,0 +1,38 @@
+FROM ubuntu:22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da
+
+RUN apt update \
+    && \
+    DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" \
+    apt install -y \
+        qemu-user \
+        libc6-arm64-cross \
+    && \
+    apt-get clean
+
+## All of this is from pwn-chal base image:
+RUN  mkdir -p /app/
+WORKDIR /app
+RUN adduser --disabled-password ctf-player
+
+# Setting up challenge stuff
+COPY utilities/arm64/flag.txt /app/flag.txt
+COPY utilities/arm64/chal /app/chal
+COPY utilities/arm64/ynetd /opt/ynetd
+COPY utilities/arm64/socat /opt/socat
+RUN chmod +x /opt/*
+
+# Setting up log stuff
+RUN touch /var/log/chal.log
+RUN chown -R root:ctf-player /var/log/chal.log
+RUN chmod 740 /var/log/chal.log
+
+# Other measures
+RUN chmod o-rwx / 2>/dev/null
+
+# QEMU-Specific ENVs for ARM/ARM64 distinction:
+ENV LIBRARY_PATH="/usr/aarch64-linux-gnu"
+ENV EMULATOR="qemu-aarch64"
+
+
+COPY docker-entrypoint-arm.sh /docker-entrypoint.sh
+CMD ["/docker-entrypoint.sh"]
