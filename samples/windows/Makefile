@@ -1,11 +1,11 @@
 IMG := pwn-chal:windows-sample
 CHAL := windows-test
 CC := x86_64-w64-mingw32-gcc
-FLAGS := -mwindows -w
+FLAGS := -w -fno-stack-protector
 
 .PHONY: all
 
-all: chal container
+all: chal container run
 chal:
 	$(CC) -o $(CHAL) $(CHAL).c $(FLAGS)
 container:

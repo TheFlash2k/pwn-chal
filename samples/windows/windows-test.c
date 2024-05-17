@@ -11,7 +11,7 @@ void gadget() { __asm__("jmp %rsp"); }
 
 void vuln() {
     char buf[0x100];
-    printf("buffer @ %p\n", buf);
+    printf("[0x%llx] Enter your payload: ", buf);
     gets(buf);
     printf(buf);
 }
