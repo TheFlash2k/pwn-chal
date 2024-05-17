@@ -143,3 +143,7 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | arm | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
 | arm64 | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
 | windows | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with WINE | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/windows) |
+
+## Known Bugs:
+
+- Both ARM/ARM64 and Windows do not have `ASLR` and `PIE`, so the stack and library addresses are always constant.
