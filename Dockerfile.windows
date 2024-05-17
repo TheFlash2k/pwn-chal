@@ -1,4 +1,4 @@
-FROM ubuntu:20.04@sha256:80ef4a44043dec4490506e6cc4289eeda2d106a70148b74b5ae91ee670e9c35d
+FROM ubuntu:22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da
 
 # Really helpful blog: https://leimao.github.io/blog/Docker-Wine/
 
@@ -13,12 +13,9 @@ RUN dpkg --add-architecture i386 \
     && wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
     && wget -nc -P /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -sc)/winehq-$(lsb_release -sc).sources \
     && apt-get update -y \
-    && apt-get install -y --install-recommends winehq-staging \
+    && apt-get install -y --install-recommends winehq-staging xvfb xpra \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get -y update \
-    && apt-get install -y xvfb
 
 # The rest of this is similar to others:
 # Setting up challenges stuff
@@ -27,7 +24,7 @@ WORKDIR /app
 RUN adduser --disabled-password ctf-player
 
 COPY utilities/flag.txt /app/flag.txt
-COPY utilities/chal /app/chal.exe
+COPY utilities/chal.exe /app/chal.exe
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
 RUN chmod +x /opt/*
@@ -42,6 +39,15 @@ RUN chmod o-rwx / 2>/dev/null
 RUN chmod 750 /app && chmod +x /app/chal.exe
 
 ENV CHAL_NAME="chal.exe"
+
+# Some winesetup:
+ENV WINEARCH=win64
+ENV WINEPREFIX=/home/ctf-player/.wine
+ENV WINEDEBUG=-all
+COPY utilities/wine.reg /tmp/
+RUN mkdir -p "$WINEPREFIX" \
+    && wine regedit.exe /tmp/wine.req \
+    && chown -R ctf-player:ctf-player "$WINEPREFIX"
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 CMD ["/docker-entrypoint.sh", "IS_WINDOWS"]

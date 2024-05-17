@@ -94,7 +94,7 @@ if [[ "$1" == "IS_PY" ]]; then
     # Check if the first line of `/app/$CHAL_NAME` is not a shebang; add it:
     FIRSTLINE=$(head -n 1 "/app/$CHAL_NAME")
     if [ ! "${FIRSTLINE:0:3}" == '#!/' ]; then
-        (echo '#!/usr/bin/env python3' | cat - "/app/$CHAL_NAME") > tmp && mv tmp "/app/$CHAL_NAME"
+        (echo '#!/usr/local/bin/python' | cat - "/app/$CHAL_NAME") > tmp && mv tmp "/app/$CHAL_NAME"
     fi
     INVOKE=python3
 fi
@@ -121,9 +121,11 @@ chattr +i "$FLAG_FILE" "/app/$CHAL_NAME" &>/dev/null
 cd "$START_DIR";
 
 if [[ "$1" == "IS_WINDOWS" ]]; then
-    info "[\e[34mWINDOWS\e[0m] Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
+    # mkdir -p "$WINEPREFIX"
+    # chown ctf-player:ctf-player "$WINEPRFIX"
+    info "[\e[34mWINDOWS\e[0m] Running \e[33m$CHAL_NAME\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
     rm -f /opt/socat
-    /opt/ynetd -lt "$CONN_TIME" -p $PORT -u $RUN_AS -se "$REDIRECT_STDERR" -d $START_DIR "xvfb-run wine /app/$CHAL_NAME" | tee -a $LOG_FILE
+    xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" "wine /app/$CHAL_NAME"
     exit 0 # idk
 fi
 
