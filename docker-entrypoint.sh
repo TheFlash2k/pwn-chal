@@ -2,7 +2,7 @@
 # Author: @TheFlash2k
 
 # self-yeet
-rm -- "$0"
+rm -f -- "$0"
 
 DEFAULT_PORT=8000
 DEFAULT_CHAL_NAME="chal"
@@ -119,6 +119,14 @@ fi
 chattr +i "$FLAG_FILE" "/app/$CHAL_NAME" &>/dev/null 
 
 cd "$START_DIR";
+
+if [[ "$1" == "IS_WINDOWS" ]]; then
+    info "[\e[34mWINDOWS\e[0m] Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
+    rm -f /opt/socat
+    /opt/ynetd -lt "$CONN_TIME" -p $PORT -u $RUN_AS -se "$REDIRECT_STDERR" -d $START_DIR "xvfb-run wine /app/$CHAL_NAME" | tee -a $LOG_FILE
+    exit 0 # idk
+fi
+
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd

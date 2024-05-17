@@ -1,5 +1,5 @@
 BASE_IMG=theflash2k/pwn-chal
-VERSIONS = latest 2204 2004 1804 1604 cpp arm arm64 py38 seccomp x86 x86-cpp
+VERSIONS = latest 2204 2004 1804 1604 cpp arm arm64 py38 seccomp x86 x86-cpp windows
 
 .PHONY: all
 all: $(VERSIONS)
