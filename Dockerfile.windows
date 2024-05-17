@@ -44,6 +44,7 @@ ENV CHAL_NAME="chal.exe"
 ENV WINEARCH=win64
 ENV WINEPREFIX=/home/ctf-player/.wine
 ENV WINEDEBUG=-all
+
 COPY utilities/wine.reg /tmp/
 RUN mkdir -p "$WINEPREFIX" \
     && wine regedit.exe /tmp/wine.req \

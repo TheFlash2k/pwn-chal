@@ -85,6 +85,14 @@ TheFlash2k
 
 ## Image-specific details
 
+### Windows
+
+Since the `windows` machine uses `wine` under the hood to run the binaries and `xvfb` to emulate a virtual display, following variables can be modified:
+
+- WINEARCH
+- WINEPREFIX
+- WINEDEBUG
+
 ### ARM & ARM64
 
 In order to run the `arm` and `arm64` containers, you need to run the following command on the host first:
@@ -134,4 +142,4 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
 | arm | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
 | arm64 | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
-| mips | Not yet implemented | --- |
+| windows | Ubuntu 22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da with WINE | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/windows) |
