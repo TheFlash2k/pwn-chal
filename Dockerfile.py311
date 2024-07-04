@@ -1,8 +1,8 @@
-FROM ubuntu:24.04@sha256:2e863c44b718727c860746568e1d54afd13b2fa71b160f5cd9058fc436217b30
+FROM python:3.11-slim-buster
 
 RUN  mkdir -p /app/
 WORKDIR /app
-RUN useradd ctf-player
+RUN adduser --disabled-password ctf-player
 
 # Setting up challenge stuff
 COPY utilities/flag.txt /app/flag.txt
@@ -21,4 +21,4 @@ RUN chmod o-rwx / 2>/dev/null
 RUN chmod 750 /app && chmod +x /app/chal
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-CMD ["/docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh", "IS_PY"]
