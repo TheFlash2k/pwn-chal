@@ -1,19 +1,11 @@
-FROM ubuntu:24.04@sha256:2e863c44b718727c860746568e1d54afd13b2fa71b160f5cd9058fc436217b30
+FROM ubuntu:20.04@sha256:80ef4a44043dec4490506e6cc4289eeda2d106a70148b74b5ae91ee670e9c35d
 
 # Really helpful blog: https://leimao.github.io/blog/Docker-Wine/
-
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LANGUAGE en_US.UTF-8
-
 RUN dpkg --add-architecture i386 \
     && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        wget ca-certificates software-properties-common \
-    && mkdir -pm755 /etc/apt/keyrings \
-    && wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
-    && wget -nc -P /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(lsb_release -sc)/winehq-$(lsb_release -sc).sources \
-    && apt-get update -y \
-    && apt-get install -y --install-recommends winehq-staging xvfb xpra \
+    && apt-get install -y --install-recommends wine64 xvfb xpra \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,16 +31,6 @@ RUN chmod o-rwx / 2>/dev/null
 RUN chmod 750 /app && chmod +x /app/chal.exe
 
 ENV CHAL_NAME="chal.exe"
-
-# Some winesetup:
-ENV WINEARCH=win64
-ENV WINEPREFIX=/home/ctf-player/.wine
-ENV WINEDEBUG=-all
-
-COPY utilities/wine.reg /tmp/
-RUN mkdir -p "$WINEPREFIX" \
-    && wine regedit.exe /tmp/wine.req \
-    && chown -R ctf-player:ctf-player "$WINEPREFIX"
-
+COPY utilities/wine.reg /opt/wine.req
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 CMD ["/docker-entrypoint.sh", "IS_WINDOWS"]

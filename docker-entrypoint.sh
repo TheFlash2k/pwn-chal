@@ -6,11 +6,12 @@ rm -f -- "$0"
 
 DEFAULT_PORT=8000
 DEFAULT_CHAL_NAME="chal"
+DEFAULT_CHAL_NAME_WINDOWS="chal.exe"
 DEFAULT_BASE="ynetd"
 DEFAULT_LOG_FILE="/var/log/chal.log"
 DEFAULT_START_DIR="/app"
 DEFAULT_FLAG_FILE="/app/flag.txt"
-DEFAULT_REDIRECT_STDERR="y"
+DEFAULT_REDIRECT_STDERR="n"
 DEFAULT_CONN_TIME="30"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
@@ -60,7 +61,7 @@ debug "CONN_TIME=$CONN_TIME"
 
 # Check if REDIRECT_STDERR is y/n
 shopt -s nocasematch
-[[ "$REDIRECT_STDERR"  != "y" && "$REDIRECT_STDERR" != "n" ]] && invalid "REDIRECT_STDERR" "y/n"
+[[ "$REDIRECT_STDERR" != "y" && "$REDIRECT_STDERR" != "n" ]] && invalid "REDIRECT_STDERR" "y/n"
 shopt -u nocasematch
 
 # Check if root:
@@ -121,11 +122,39 @@ chattr +i "$FLAG_FILE" "/app/$CHAL_NAME" &>/dev/null
 cd "$START_DIR";
 
 if [[ "$1" == "IS_WINDOWS" ]]; then
-    # mkdir -p "$WINEPREFIX"
-    # chown ctf-player:ctf-player "$WINEPRFIX"
+
+    [ "$CHAL_NAME.exe" != "$DEFAULT_CHAL_NAME_WINDOWS" ] &&  rm -f "/app/$DEFAULT_CHAL_NAME_WINDOWS"
+
+    [[ -z "$WINEARCH" ]] && export WINEARCH=win64
+    [[ -z "$WINPREFIX" ]] && export WINEPREFIX="$HOMEDIR/.wine"
+    [[ "$RUN_AS" != "root" ]] && HOMEDIR="/home/$RUN_AS" || HOMEDIR="/root"
+
+    mkdir -p "$WINEPREFIX"
+    chown -R "$RUN_AS":"$RUN_AS" "$WINEPREFIX"
+    info "[\e[34mWINDOWS\e[0m] Setting up wine prefixes and registries..."
+    su $RUN_AS -c "wine regedit.exe /opt/wine.req" &>/dev/null
+    info "[\e[34mWINDOWS\e[0m] Setting WINEPREFIX=$WINEPREFIX"
+
+    mv "$FLAG_FILE" "$WINEPREFIX/drive_c"
+    chown "$RUN_AS:root" "$WINEPREFIX/drive_c/`basename $FLAG_FILE`"
+    chmod 444 "$WINEPREFIX/drive_c/`basename $FLAG_FILE`"
+
+    if [[ -z $WIN_DEBUG ]]; then
+        info "[\e[34mWINDOWS\e[0m] Output debugging is \e[31mdisabled\e[0m"
+        BASE="socat"
+    else
+        info "[\e[34mWINDOWS\e[0m] Output debugging is \e[32menabled\e[0m"
+    fi
+
     info "[\e[34mWINDOWS\e[0m] Running \e[33m$CHAL_NAME\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
-    rm -f /opt/socat
-    xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" "wine /app/$CHAL_NAME"
+    if [[ "$WIN_DEBUG" == "y" ]]; then
+        rm -f /opt/socat
+        xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" -se "$REDIRECT_STDERR" "WINEDEBUG=-all wine /app/$CHAL_NAME"
+    else
+        [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
+        (su $RUN_AS -c "xvfb-run -a /opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"wine /app/$CHAL_NAME\"$REDIRECT_STDERR") | tee -a $LOG_FILE
+    fi
+
     exit 0 # idk
 fi
 

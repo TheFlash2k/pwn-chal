@@ -56,6 +56,8 @@ User can specify the path to the flag file. Needs to be an absolute value as the
 
 | **NOTE**: There is a `FLAG_FILE_SYMLINK` environment variable, which isn't set by default, but if set, will generate a symlink for the flag in `/app/flag.txt` if `FLAG_FILE` is not `/app/flag.txt`.
 
+| **NOTE**: When using `theflash2k/pwn-chal:windows`, make sure to put flag in `/app/flag.txt` or set the `FLAG_FILE` accordingly. Randomly generated flag files may not work as the flag will be copied from `/app/flag.txt` or `$FLAG_FILE` to `C:\flag.txt`
+
 ### LOG_FILE
 The absolute path of the file in which the logs will be stored. If not path is specified, only a file name; the logs will be stored in `/app/<file-name>`
 
@@ -89,9 +91,19 @@ TheFlash2k
 
 Since the `windows` machine uses `wine` under the hood to run the binaries and `xvfb` to emulate a virtual display, following variables can be modified:
 
-- WINEARCH
-- WINEPREFIX
-- WINEDEBUG
+### WINEARCH:
+
+This will let wine know whether the `CHAL_NAME` binary is a `x86` or `x64` binary.
+
+### WINEPREFIX:
+
+This is the folder that contains the wine configurations, if the configurations do not already exist, they will take around 10-15 seconds to generate the entire configurations. By default, `$RUN_AS/.wine` is set as the WINEPREFIX and upon each container start, the configs are automatically generated.
+
+### WIN_DEBUG:
+
+This is a custom variable, if set to any value, it will use `ynetd` to serve the `wine`-served binary and upon crash, it will show the debug logs to the user on the connection. If you want to see detailed logs, you can also set the `REDIRECT_STDERR=y` so that all the stderr logs are also passed through the socket. However, this should only be used when trying a challenge locally.
+
+| **NOTE**: Since ASLR is disabled by default in the wine configuration, all `ASLR` related challenges might not work as expected.
 
 ### ARM & ARM64
 
