@@ -67,6 +67,8 @@ By default, the binaries will run in the context of `ctf-player` user. This can 
 ### SETUID_USER
 This environment variable will change owner and group of `CHAL_NAME` to `SETUID_USER` and then give it `suid` permissions. And will run as `OVERRIDE_USER`. Permission set is `4755`. if `SETUID_USER` doesn't exist, it will default to `root`.
 
+| **NOTE**: When the `SETUID_USER` is set, `FLAG_FILE` will automatically be set to `400`, i.e. `READ-ONLY` to `$SETUID_USER`. This can be overriden with the `FORCE_FLAG_RO` parameter. Just set that to any value except `y` and the flag will be `440`.
+
 ### REDIRECT_STDERR
 This environment variable will simply allow redirection of stderr through the socket. By default it is set to `y`, meaning that stderr will also be redirected.
 

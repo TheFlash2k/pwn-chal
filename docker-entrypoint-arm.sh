@@ -12,6 +12,7 @@ DEFAULT_START_DIR="/app"
 DEFAULT_FLAG_FILE="/app/flag.txt"
 DEFAULT_REDIRECT_STDERR="y"
 DEFAULT_CONN_TIME="30"
+DEFAULT_FORCE_FLAG_RO="y"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
@@ -48,6 +49,7 @@ START_DIR=$(set_default "START_DIR")
 FLAG_FILE=$(set_default "FLAG_FILE")
 REDIRECT_STDERR=$(set_default "REDIRECT_STDERR")
 CONN_TIME=$(set_default "CONN_TIME")
+FORCE_FLAG_RO=$(set_default FORCE_FLAG_RO)
 
 debug "PORT=$PORT"
 debug "CHAL_NAME=$CHAL_NAME"
@@ -57,6 +59,7 @@ debug "START_DIR=$START_DIR"
 debug "FLAG_FILE=$FLAG_FILE"
 debug "REDIRECT_STDERR=$REDIRECT_STDERR"
 debug "CONN_TIME=$CONN_TIME"
+debug "FORCE_FLAG_RO=$FORCE_FLAG_RO"
 
 # Check if REDIRECT_STDERR is y/n
 shopt -s nocasematch
@@ -111,12 +114,14 @@ if [ ! -z "$SETUID_USER" ]; then
     if ! id "$SETUID_USER" >/dev/null 2>&1; then
         SETUID_USER="root"
     fi
-    chown "$SETUID_USER":"$SETUID_USER" "/app/$CHAL_NAME"
+    chown "$SETUID_USER":"$SETUID_USER" "/app/$CHAL_NAME" "$FLAG_FILE" /flag* /app/flag* &>/dev/null
     chmod 4755 "/app/$CHAL_NAME"
+    info "Setting the SUID bit on /app/$CHAL_NAME for user $SETUID_USER"
+    [[ $FORCE_FLAG_RO == "y" ]] && chmod 400 "$FLAG_FILE" /flag* /app/flag* &>/dev/null
 fi
 
 # Making the files read-only (only works if permissions allowed to the running container)
-chattr +i "$FLAG_FILE" "/app/$CHAL_NAME" &>/dev/null 
+chattr +i "$FLAG_FILE" "/app/$CHAL_NAME" &>/dev/null
 
 ###### QEMU SETUP #######
 [ -z "$LIBRARY_PATH" ] && error "LIBRARY_PATH not set!"
@@ -150,7 +155,7 @@ fi
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m using \e[33m$EMULATOR\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" $EMULATOR -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\",stderr | tee -a $LOG_FILE"
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "$EMULATOR" -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\",stderr | tee -a $LOG_FILE"
 else
     rm -f /opt/socat
     # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
