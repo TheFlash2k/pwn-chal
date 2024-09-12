@@ -4,11 +4,17 @@ RUN  mkdir -p /app/
 WORKDIR /app
 RUN useradd ctf-player
 
+RUN apt update && \
+    apt install -y xinetd && \
+    apt clean && \
+    rm -rf ~/.cache /var/lib/apt/lists/*
+
 # Setting up challenge stuff
 COPY utilities/flag.txt /app/flag.txt
 COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
+COPY utilities/xinetd.service /opt/xinetd.service
 RUN chmod +x /opt/*
 
 # Setting up log stuff

@@ -82,7 +82,7 @@ else
     fi
 fi
 
-[[ "$BASE" != "ynetd" && "$BASE" != "socat" ]] && invalid "BASE" "ynetd/socat"
+[[ "$BASE" != "ynetd" && "$BASE" != "socat" && "$BASE" != "xinetd" ]] && invalid "BASE" "ynetd/socat/xinetd"
 [ ! -f "/app/$CHAL_NAME" ] &&  error "No base-binary found: \e[33m/app/$CHAL_NAME\e[0m"
 [ "$CHAL_NAME" != "$DEFAULT_CHAL_NAME" ] &&  rm -f "/app/$DEFAULT_CHAL_NAME"
 
@@ -100,7 +100,7 @@ if [[ "$1" == "IS_PY" ]]; then
     if [ ! "${FIRSTLINE:0:3}" == '#!/' ]; then
         (echo '#!/usr/local/bin/python' | cat - "/app/$CHAL_NAME") > tmp && mv tmp "/app/$CHAL_NAME"
     fi
-    INVOKE=python3
+    INVOKE="python3 "
 fi
 
 # Setting the permissions 550 on the /app/CHAL_NAME and 440 on flag
@@ -163,6 +163,7 @@ if [[ "$1" == "IS_WINDOWS" ]]; then
     exit 0 # idk
 fi
 
+env > /etc/environment
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
@@ -170,10 +171,21 @@ if [ "$BASE" == "socat" ]; then
     touch $LOG_FILE
     chown $RUN_AS:$RUN_AS $LOG_FILE
     [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
-    su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
-else
+    su $RUN_AS -p -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
+elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
     # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
     # -se => stderr to redirect to socket
-    /opt/ynetd -lt "$CONN_TIME" -p $PORT -u $RUN_AS -se "$REDIRECT_STDERR" -d $START_DIR "$INVOKE /app/$CHAL_NAME" | tee -a $LOG_FILE
+    /opt/ynetd -lt "$CONN_TIME" -u "$RUN_AS" -p $PORT -d $START_DIR "$INVOKE/app/$CHAL_NAME" | tee -a $LOG_FILE
+elif [  "$BASE" == "xinetd" ]; then
+    rm -rf /opt/{socat,ynetd}
+
+    sed -i "s/PORT/$PORT/g" /opt/xinetd.service
+    sed -i "s/CHAL_NAME/$CHAL_NAME/g" /opt/xinetd.service
+    sed -i "s/RUN_AS/$RUN_AS/g" /opt/xinetd.service
+
+    mv /opt/xinetd.service /etc/xinetd.d/chall
+    service xinetd restart
+
+    /usr/sbin/xinetd -dontfork
 fi
