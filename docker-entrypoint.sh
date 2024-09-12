@@ -167,7 +167,9 @@ info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m u
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
     shopt -s nocasematch
-    [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr"
+    touch $LOG_FILE
+    chown $RUN_AS:$RUN_AS $LOG_FILE
+    [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
     su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
 else
     rm -f /opt/socat
