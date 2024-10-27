@@ -141,6 +141,7 @@ info "[\e[33mQEMU\e[0m] using \e[32m$EMULATOR\e[0m and libaries @ \e[36m$LIBRARY
 
 cd "$START_DIR";
 
+env > /etc/environment
 # Run the gdb server, host the binary.
 ## NOTE: The binary will be hosted, but the stdin/out/err won't be redirected, so you'll have to communicate using docker :(
 # if someone can help me with this, that'll be helpful, ty.
@@ -152,13 +153,19 @@ if [ ! -z "$QEMU_GDB_PORT" ]; then
     exit 0
 fi
 
+# Added this specifically for Showdown (No flag, only submitter binary)
+[ ! -z "$NO_FLAG" ] && rm -f "$FLAG_FILE"
+
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m using \e[33m$EMULATOR\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "$EMULATOR" -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\",stderr | tee -a $LOG_FILE"
-else
+    [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "$EMULATOR" -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
+elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
     # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
     # -se => stderr to redirect to socket
     LD_LIBRARY_PATH="$LD_LIBRARY_PATH" $EMULATOR -L "$LIBRARY_PATH" /opt/ynetd -lt 1 -p $PORT -u $RUN_AS -se y -d $START_DIR "/app/$CHAL_NAME" | tee -a $LOG_FILE
+else
+    error "Invalid base: $BASE"
 fi

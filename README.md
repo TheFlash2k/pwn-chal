@@ -72,6 +72,9 @@ This environment variable will change owner and group of `CHAL_NAME` to `SETUID_
 ### REDIRECT_STDERR
 This environment variable will simply allow redirection of stderr through the socket. By default it is set to `y`, meaning that stderr will also be redirected.
 
+### NO_FLAG
+This environment variable will simply remove the `$FLAG_FILE`. (Made this specifically for Showdown-based challenges where there's a submitter binary.)
+
 ---
 
 Environment variables may also be specified with the docker run command:
@@ -155,6 +158,8 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | x86-cpp | theflash2k/pwn-chal:latest with g++-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86-cpp) |
 | seccomp | theflash2k/pwn-chal:latest with libseccomp-dev installed | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/seccomp) |
 | py38 | python:3.8-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py38) |
+| py311 | python:3.11-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| crypto | python:3.11-slim-buster with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
 | arm | 24.04@sha256:2e863c44b718727c860746568e1d54afd13b2fa71b160f5cd9058fc436217b30 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
 | arm64 | 24.04@sha256:2e863c44b718727c860746568e1d54afd13b2fa71b160f5cd9058fc436217b30 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
