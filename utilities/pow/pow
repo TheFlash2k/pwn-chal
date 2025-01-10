@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# This basically downloads the pow-solver from hxp: https://hxp.io/assets/data/code/ctf-ynetd-2024.12.31.tar.xz
+# Then solves the bits specified.
+# Most of this script is a copy-pasta from: https://pwn.red/pow
+
+set -eu
+
+# Currently only supported is x86_64
+run() {	
+	cache_root=${XDG_CACHE_HOME:-$HOME/.cache}/pow
+	mkdir -p "$cache_root"
+	cache_path=$cache_root/pow-solver
+	echo "In case the POW Solver doesn't work, please go to https://github.com/TheFlash2k/pwn-chal/tree/master/utilities/pow"
+	echo "and download the source-code and compile the binary for your system."
+	if [ ! -e "$cache_path" ]; then
+		curl -sSfLo "$cache_path" "https://github.com/TheFlash2k/pwn-chal/raw/refs/heads/master/utilities/pow/pow-solver"
+		chmod u+x "$cache_path"
+	fi
+	"$cache_path" "$@"
+	if [ $? != 0 ]; then
+		echo "Please download the source-code and compile it: https://github.com/TheFlash2k/pwn-chal/tree/master/utilities/pow"
+		exit 1
+	fi
+}
+
+run "$@"

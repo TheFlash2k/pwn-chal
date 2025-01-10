@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# This basically downloads the pow-solver from hxp: https://hxp.io/assets/data/code/ctf-ynetd-2024.12.31.tar.xz
-# Then solves the bits specified.
-
-set -e
-
-# Currently only supported is x86_64
