@@ -40,6 +40,13 @@ OUTBOUND_BLOCK
 POW
 ```
 
+There are other image-specific environment variables as well:
+
+- [Kernel](#kernel)
+- [Windows](#windows)
+- [ARM/ARM64](#arm--arm64)
+
+
 ### CHAL_NAME
 This is the name of the challenge binary. (I know, should've been `CHAL_BIN` or something, but ;-;).
 
@@ -102,7 +109,52 @@ TheFlash2k
 
 ## Image-specific details
 
-### Windows
+## Kernel:
+
+For the kernel image, I decided to use QEMU under-the-hood. You can modify the following variables
+
+### KASLR:
+By default, KASLR (Kernel Address Space Layout Randomization) is set to `1`, i.e. it will be enabled. You can modify it by setting either `0` or `1` .
+
+### KPTI:
+By default, KPTI (Kernel Page Table Isolation) is set to `1`, i.e. it will be enabled. You can modify it by setting either `0` or `1` .
+
+### SMEP:
+By default, SMEP (Supervisor Mode Execution Prevention) is set to `1`, i.e. it will be enabled. You can modify it by setting either `0` or `1` .
+
+### SMAP:
+By default, SMAP (Supervisor Mode Access Prevention) is set to `1`, i.e. it will be enabled. You can modify it by setting either `0` or `1` .
+
+### PANIC_ON_OOPS:
+By default, Panic on OOPS is set to `1`, i.e. it will be enabled. You can modify it by setting either `0` or `1` .
+
+### MODE:
+`MODE` specifies how your payload will be downloaded/placed inside the vm. There are two available options:
+
+- remote: This prompts the user to enter a URL from which the exploit will be downloaded. [DEFAULT]
+- stdin: This prompts the user to enter a base64 encoded payload and then decodes it and stores it inside the vm.
+
+### VM_MEMORY:
+The amount of RAM that will be allocated to the virtual machine
+
+### INITRAMFS:
+The INITRAMFS file name. This file MUST be stored at `/app`. 
+Default name is: `initramfs.cpio.gz`.
+
+### KERNEL:
+The name of the KERNEL. This file MUST be stored at `/app`.
+Default name is: `vmlinuz`
+
+### CPU:
+The CPU that will be passed to the underlying qemu. There are two available options:
+- `qemu64` [DEFAULT]
+- `kvm64`
+
+### SMP:
+The CPU threads/cores defined in SMP will be passed directly.
+By default it is set to `1`.
+
+## Windows
 
 Since the `windows` machine uses `wine` under the hood to run the binaries and `xvfb` to emulate a virtual display, following variables can be modified:
 
@@ -120,7 +172,7 @@ This is a custom variable, if set to any value, it will use `ynetd` to serve the
 
 | **NOTE**: Since ASLR is disabled by default in the wine configuration, all `ASLR` related challenges might not work as expected.
 
-### ARM & ARM64
+## ARM & ARM64
 
 In order to run the `arm` and `arm64` containers, you need to run the following command on the host first:
 
@@ -164,6 +216,7 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | 2004 | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2004) |
 | 1804 | Ubuntu 18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1804) |
 | 1604 | Ubuntu 16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
+| kernel | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
 | x86 | theflash2k/pwn-chal:latest with gcc-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86) |
 | x86-cpp | theflash2k/pwn-chal:latest with g++-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86-cpp) |
 | seccomp | theflash2k/pwn-chal:latest with libseccomp-dev installed | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/seccomp) |

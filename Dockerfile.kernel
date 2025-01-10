@@ -1,0 +1,28 @@
+FROM ubuntu:latest
+
+RUN  mkdir -p /app/
+WORKDIR /app
+RUN useradd ctf
+
+# Install qemu and other dependencies
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && \
+	apt install -y qemu-system-x86 qemu-utils \
+        socat iptables cpio gzip wget curl && \
+	apt clean -y && \
+	apt autoclean -y && \
+	rm -rf /var/lib/apt/lists/*
+
+# Setting up challenge stuff
+COPY utilities/flag.txt /app/flag.txt
+COPY utilities/ynetd /opt/ynetd
+COPY utilities/run-kernel.sh /app/run-kernel.sh
+COPY utilities/block-outbound.sh /etc/block-outbound.sh
+RUN chmod +x /opt/ynetd /app/run-kernel.sh /etc/block-outbound.sh
+
+# Other measures
+RUN chmod o-rwx / 2>/dev/null
+RUN chmod 750 /app
+
+COPY docker-entrypoint-kernel.sh /docker-entrypoint.sh
+CMD ["/docker-entrypoint.sh"]

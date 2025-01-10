@@ -168,8 +168,7 @@ if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
     if [[ $? == 4 ]]; then
         warn "CAP_NET_ADMIN is not set. Please set that to block outbound connections"
     else
-        info "Blocking all outbound connections"
-        /etc/block-outbound.sh
+        /etc/block-outbound.sh &>/dev/null
         [[ $? != 0 ]] && \
             warn "Failed to block outbound connections!" || \
             info "Blocked all outbound connections."

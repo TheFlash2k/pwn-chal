@@ -5,7 +5,9 @@ WORKDIR /app
 RUN useradd ctf
 
 # Downloading iptables
-RUN apt update && TZ=ASIA/KARACHI \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN rm -rf /var/lib/apt/lists/* && \
+	apt update && \
 	apt install -y iptables && \
 	apt clean -y && \
 	apt autoclean -y && \
