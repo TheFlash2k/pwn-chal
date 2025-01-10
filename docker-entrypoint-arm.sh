@@ -14,6 +14,7 @@ DEFAULT_REDIRECT_STDERR="y"
 DEFAULT_CONN_TIME="30"
 DEFAULT_FORCE_FLAG_RO="y"
 DEFAULT_BLOCK_OUTBOUND="n"
+DEFAULT_POW="0"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
@@ -52,6 +53,7 @@ REDIRECT_STDERR=$(set_default "REDIRECT_STDERR")
 CONN_TIME=$(set_default "CONN_TIME")
 FORCE_FLAG_RO=$(set_default FORCE_FLAG_RO)
 BLOCK_OUTBOUND=$(set_default "BLOCK_OUTBOUND")
+POW=$(set_default "POW")
 
 debug "PORT=$PORT"
 debug "CHAL_NAME=$CHAL_NAME"
@@ -63,6 +65,7 @@ debug "REDIRECT_STDERR=$REDIRECT_STDERR"
 debug "CONN_TIME=$CONN_TIME"
 debug "FORCE_FLAG_RO=$FORCE_FLAG_RO"
 debug "BLOCK_OUTBOUND=$BLOCK_OUTBOUND"
+debug "POW=$POW"
 
 # Check if REDIRECT_STDERR is y/n
 shopt -s nocasematch
@@ -173,17 +176,31 @@ if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
         fi
     fi
 fi
+# still remove if it's there
+rm -f /etc/block-outbound.sh
+
+# POW range is 0-256
+if [[ "$POW" -lt 0 ]] || [[ "$POW" -gt 256 ]]; then
+    warn "POW is set to $POW. It should be between 0-256. Defaulting to 0."
+    POW=0
+fi
+
+# Just take write permission for everyone on libc*, ld* and $CHAL_NAME
+chmod ugo-w /app/{libc*,ld*,flag.txt,$CHAL_NAME} /flag* /app/flag* &>/dev/null
 
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m using \e[33m$EMULATOR\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
     [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
+    if [ "$POW" -gt 0 ]; then
+        warn "POW isn't supported with socat."
+    fi
     LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "$EMULATOR" -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
 elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
     # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
     # -se => stderr to redirect to socket
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" $EMULATOR -L "$LIBRARY_PATH" /opt/ynetd -lt 1 -p $PORT -u $RUN_AS -se y -d $START_DIR "/app/$CHAL_NAME" | tee -a $LOG_FILE
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH" $EMULATOR -L "$LIBRARY_PATH" /opt/ynetd -lt 1 -p $PORT -u $RUN_AS -pow "$POW" -se y -d $START_DIR "/app/$CHAL_NAME" | tee -a $LOG_FILE
 else
     error "Invalid base: $BASE"
 fi

@@ -37,6 +37,7 @@ SETUID_USER
 REDIRECT_STDERR
 NO_FLAG
 OUTBOUND_BLOCK
+POW
 ```
 
 ### CHAL_NAME
@@ -79,6 +80,10 @@ This environment variable will simply remove the `$FLAG_FILE`. (Made this specif
 
 ### OUTBOUND_BLOCK
 This blocks all the outbound connection. This is done using `iptables` so `CAP_NET_ADMIN` is required for the running container. If it is not provided, it doesn't SOFT-EXIT, but rather continues anyways. (Default=`y`)
+
+### POW
+Proof of Work. The value can be between 0-256. Default is `0`. 256 means HAAARD. Usually, you go for `25-32`.
+> The POW was originally implemented by HXPCTF team. You can see in [pow](utilities/pow/pow) script
 
 ---
 
