@@ -20,7 +20,7 @@ run() {
 		echo "Please download the source-code and compile it: https://github.com/TheFlash2k/pwn-chal/tree/master/utilities/pow"
 		exit 1
 	fi
-	echo; echo "Solution: $resp"
+	echo "Solution: $resp"
 }
 
 run "$@"
