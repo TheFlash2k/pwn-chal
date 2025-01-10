@@ -2,18 +2,26 @@ FROM ubuntu:23.04@sha256:5a828e28de105c3d7821c4442f0f5d1c52dc16acf4999d5f31a3bc0
 
 RUN  mkdir -p /app/
 WORKDIR /app
-RUN useradd ctf-player
+RUN useradd ctf
+
+# Downloading iptables
+RUN apt update && TZ=ASIA/KARACHI \
+	apt install -y iptables && \
+	apt clean -y && \
+	apt autoclean -y && \
+	rm -rf /var/lib/apt/lists/*
 
 # Setting up challenge stuff
 COPY utilities/flag.txt /app/flag.txt
 COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
+COPY utilities/block-outbound.sh /etc/block-outbound.sh
 RUN chmod +x /opt/*
 
 # Setting up log stuff
 RUN touch /var/log/chal.log
-RUN chown -R root:ctf-player /var/log/chal.log
+RUN chown -R root:ctf /var/log/chal.log
 RUN chmod 740 /var/log/chal.log
 
 # Other measures

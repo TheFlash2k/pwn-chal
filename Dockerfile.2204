@@ -1,19 +1,27 @@
-FROM ubuntu:22.04@sha256:f9d633ff6640178c2d0525017174a688e2c1aef28f0a0130b26bd5554491f0da
+FROM ubuntu:22.04@sha256:3d1556a8a18cf5307b121e0a98e93f1ddf1f3f8e092f1fddfd941254785b95d7
 
 RUN  mkdir -p /app/
 WORKDIR /app
-RUN adduser --disabled-password ctf-player
+RUN useradd ctf
+
+# Downloading iptables
+RUN apt update && TZ=ASIA/KARACHI \
+	apt install -y iptables && \
+	apt clean -y && \
+	apt autoclean -y && \
+	rm -rf /var/lib/apt/lists/*
 
 # Setting up challenge stuff
 COPY utilities/flag.txt /app/flag.txt
 COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
+COPY utilities/block-outbound.sh /etc/block-outbound.sh
 RUN chmod +x /opt/*
 
 # Setting up log stuff
 RUN touch /var/log/chal.log
-RUN chown -R root:ctf-player /var/log/chal.log
+RUN chown -R root:ctf /var/log/chal.log
 RUN chmod 740 /var/log/chal.log
 
 # Other measures

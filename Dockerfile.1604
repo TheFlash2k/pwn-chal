@@ -2,18 +2,26 @@ FROM ubuntu:16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5
 
 RUN  mkdir -p /app/
 WORKDIR /app
-RUN adduser --disabled-password ctf-player
+RUN useradd ctf
+
+# Downloading iptables
+RUN apt update && TZ=ASIA/KARACHI \
+	apt install -y iptables && \
+	apt clean -y && \
+	apt autoclean -y && \
+	rm -rf /var/lib/apt/lists/*
 
 # Setting up challenge stuff
 COPY utilities/flag.txt /app/flag.txt
 COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
+COPY utilities/block-outbound.sh /etc/block-outbound.sh
 RUN chmod +x /opt/*
 
 # Setting up log stuff
 RUN touch /var/log/chal.log
-RUN chown -R root:ctf-player /var/log/chal.log
+RUN chown -R root:ctf /var/log/chal.log
 RUN chmod 740 /var/log/chal.log
 
 # Other measures

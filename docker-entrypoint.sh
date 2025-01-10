@@ -11,9 +11,10 @@ DEFAULT_BASE="ynetd"
 DEFAULT_LOG_FILE="/var/log/chal.log"
 DEFAULT_START_DIR="/app"
 DEFAULT_FLAG_FILE="/app/flag.txt"
-DEFAULT_REDIRECT_STDERR="n"
+DEFAULT_REDIRECT_STDERR="y"
 DEFAULT_CONN_TIME="30"
 DEFAULT_FORCE_FLAG_RO="y"
+DEFAULT_BLOCK_OUTBOUND="y"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
@@ -50,7 +51,8 @@ START_DIR=$(set_default "START_DIR")
 FLAG_FILE=$(set_default "FLAG_FILE")
 REDIRECT_STDERR=$(set_default "REDIRECT_STDERR")
 CONN_TIME=$(set_default "CONN_TIME")
-FORCE_FLAG_RO=$(set_default FORCE_FLAG_RO)
+FORCE_FLAG_RO=$(set_default "FORCE_FLAG_RO")
+BLOCK_OUTBOUND=$(set_default "BLOCK_OUTBOUND")
 
 debug "PORT=$PORT"
 debug "CHAL_NAME=$CHAL_NAME"
@@ -61,6 +63,7 @@ debug "FLAG_FILE=$FLAG_FILE"
 debug "REDIRECT_STDERR=$REDIRECT_STDERR"
 debug "CONN_TIME=$CONN_TIME"
 debug "FORCE_FLAG_RO=$FORCE_FLAG_RO"
+debug "BLOCK_OUTBOUND=$BLOCK_OUTBOUND"
 
 # Check if REDIRECT_STDERR is y/n
 shopt -s nocasematch
@@ -68,10 +71,10 @@ shopt -s nocasematch
 shopt -u nocasematch
 
 # Check if root:
-[ "$EUID" -eq 0 ] &&  chown -R root:ctf-player /app/
+[ "$EUID" -eq 0 ] &&  chown -R root:ctf /app/
 
 if [ -z "$OVERRIDE_USER" ]; then
-    RUN_AS="ctf-player"
+    RUN_AS="ctf"
 else
     # Check if user exists:
     if id "$OVERRIDE_USER" >/dev/null 2>&1; then
@@ -167,6 +170,20 @@ env > /etc/environment
 
 # Added this specifically for Showdown (No flag, only submitter binary)
 [ ! -z "$NO_FLAG" ] && rm -f "$FLAG_FILE"
+
+# Could be cleaned up but im lazy asf
+if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
+    iptables -F &>/dev/null
+    if [[ $? == 4 ]]; then
+        warn "CAP_NET_ADMIN is not set. Please set that to block outbound connections"
+    else
+        info "Blocking all outbound connections"
+        /etc/block-outbound.sh
+        [[ $? != 0 ]] && \
+            warn "Failed to block outbound connections!" || \
+            info "Blocked all outbound connections."
+    fi
+fi
 
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
 if [ "$BASE" == "socat" ]; then
