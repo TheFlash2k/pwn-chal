@@ -199,6 +199,14 @@ fi
 # Just take write permission for everyone on libc*, ld* and $CHAL_NAME
 chmod ugo-w /app/{libc*,ld*,flag.txt,$CHAL_NAME} /flag* /app/flag* &>/dev/null
 
+if [ "$POW" -gt 0 ]; then
+    if [ "$BASE" == "ynetd" ]; then
+        info "Using Proof-of-Work difficulty: $POW"
+    else
+        warn "Proof-of-Work is only supported with ynetd. Ignoring POW."
+    fi
+fi
+
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
@@ -206,17 +214,9 @@ if [ "$BASE" == "socat" ]; then
     touch $LOG_FILE
     chown $RUN_AS:$RUN_AS $LOG_FILE
     [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
-    if [ "$POW" -gt 0 ]; then
-        warn "POW isn't supported with socat."
-    fi
     su $RUN_AS -p -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"$INVOKE/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
 elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
-    # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
-    # -se => stderr to redirect to socket
-    if [ "$POW" -gt 0 ]; then
-        info "Using POW: $POW"
-    fi
     /opt/ynetd -lt "$CONN_TIME" -u "$RUN_AS" -pow "$POW" -se "$REDIRECT_STDERR" -p $PORT -d $START_DIR "$INVOKE/app/$CHAL_NAME" | tee -a $LOG_FILE
 else
     error "Invalid base: $BASE"

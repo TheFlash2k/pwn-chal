@@ -180,9 +180,12 @@ fi
 rm -f /etc/block-outbound.sh
 
 # POW range is 0-256
-if [[ "$POW" -lt 0 ]] || [[ "$POW" -gt 256 ]]; then
-    warn "POW is set to $POW. It should be between 0-256. Defaulting to 0."
-    POW=0
+if [ "$POW" -gt 0 ]; then
+    if [ "$BASE" == "ynetd" ]; then
+        info "Using Proof-of-Work difficulty: $POW"
+    else
+        warn "Proof-of-Work is only supported with ynetd. Ignoring POW."
+    fi
 fi
 
 # Just take write permission for everyone on libc*, ld* and $CHAL_NAME
@@ -192,14 +195,9 @@ info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m u
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
     [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
-    if [ "$POW" -gt 0 ]; then
-        warn "POW isn't supported with socat."
-    fi
     LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "$EMULATOR" -L "$LIBRARY_PATH" /bin/su $RUN_AS -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
 elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
-    # -lt => cpu time in seconds. Keeps connection opened for max 10 seconds.
-    # -se => stderr to redirect to socket
     LD_LIBRARY_PATH="$LD_LIBRARY_PATH" $EMULATOR -L "$LIBRARY_PATH" /opt/ynetd -lt 1 -p $PORT -u $RUN_AS -pow "$POW" -se y -d $START_DIR "/app/$CHAL_NAME" | tee -a $LOG_FILE
 else
     error "Invalid base: $BASE"
