@@ -1,0 +1,38 @@
+FROM sagemath/sagemath:latest
+
+USER root
+RUN  mkdir -p /app/
+WORKDIR /app
+RUN useradd -U -M -d /app -c '@theflash2k/pwn-chal container default user' ctf
+
+# Downloading iptables
+RUN apt update && \
+	apt install -y iptables && \
+	apt clean -y && \
+	apt autoclean -y && \
+	rm -rf /var/lib/apt/lists/*
+
+# Some permissions to allow sage to run as ctf
+RUN mkdir -p /home/sage/.sage
+RUN chmod o+rx /home/sage && chown -R sage:ctf /home/sage/sage/sage /home/sage/.sage
+RUN chmod 770 /home/sage/.sage
+
+# Setting up challenge stuff
+COPY utilities/flag.txt /app/flag.txt
+COPY utilities/chal /app/chal
+COPY utilities/ynetd /opt/ynetd
+COPY utilities/socat /opt/socat
+COPY utilities/block-outbound.sh /etc/block-outbound.sh
+RUN chmod +x /opt/*
+
+# Setting up log stuff
+RUN touch /var/log/chal.log
+RUN chown -R root:ctf /var/log/chal.log
+RUN chmod 740 /var/log/chal.log
+
+# Other measures
+RUN chmod o-rwx / 2>/dev/null
+RUN chmod 750 /app && chmod +x /app/chal
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+CMD ["/docker-entrypoint.sh", "IS_SAGE"]

@@ -1,5 +1,5 @@
 BASE_IMG=theflash2k/pwn-chal
-VERSIONS = latest kernel 2404 2304 2204 2004 1804 1604 cpp arm arm64 py311 py38 seccomp x86 x86-cpp windows crypto
+VERSIONS = latest kernel 2404 2304 2204 2004 1804 1604 cpp arm arm64 py311 py38 seccomp x86 x86-cpp windows crypto sagemath
 
 .PHONY: all
 all: $(VERSIONS)

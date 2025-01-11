@@ -107,6 +107,8 @@ if [[ "$1" == "IS_PY" ]]; then
         (echo '#!/usr/local/bin/python' | cat - "/app/$CHAL_NAME") > tmp && mv tmp "/app/$CHAL_NAME"
     fi
     INVOKE="/usr/local/bin/python "
+elif [[ "$1" == "IS_SAGE" ]]; then
+    INVOKE="/usr/bin/sage -python "
 fi
 
 # Setting the permissions 550 on the /app/CHAL_NAME and 440 on flag
@@ -160,7 +162,7 @@ if [[ "$1" == "IS_WINDOWS" ]]; then
     info "[\e[34mWINDOWS\e[0m] Running \e[33m$CHAL_NAME\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
     if [[ "$WIN_DEBUG" == "y" ]]; then
         rm -f /opt/socat
-        xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" -se "$REDIRECT_STDERR" "WINEDEBUG=-all wine /app/$CHAL_NAME"
+        xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" -sh n -se "$REDIRECT_STDERR" "WINEDEBUG=-all wine /app/$CHAL_NAME"
     else
         [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
         (su $RUN_AS -c "xvfb-run -a /opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"wine /app/$CHAL_NAME\"$REDIRECT_STDERR") | tee -a $LOG_FILE
