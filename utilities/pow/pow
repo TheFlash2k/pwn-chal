@@ -13,9 +13,10 @@ run() {
 	mkdir -p "$cache_root"
 	cache_path=$cache_root/pow-solver
 	if [ ! -e "$cache_path" ]; then
-		curl -sSfLo "pow-solver-$ARCH.tar.xz" "https://github.com/TheFlash2k/pwn-chal/raw/refs/heads/master/utilities/pow/pow-solver-$ARCH.tar.xz"
-		cd $cache_root
-		tar -xzf "pow-solver-$ARCH.tar.xz" && rm pow-solver-$ARCH.tar.xz
+		curl -sSfLo "$cache_root/pow-solver-$ARCH.tar.xz" "https://github.com/TheFlash2k/pwn-chal/raw/refs/heads/master/utilities/pow/pow-solver-$ARCH.tar.xz"
+		cd "$cache_root"
+		tar -xzf "$cache_root/pow-solver-$ARCH.tar.xz"
+		rm -f "$cache_root/pow-solver-$ARCH.tar.xz"
 	fi
 	resp=`LD_LIBRARY_PATH="$cache_root:$LD_LIBRARY_PATH" "$cache_path" "$@"`
 	if [ $? != 0 ]; then
