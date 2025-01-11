@@ -18,7 +18,7 @@ run() {
 		tar -xzf "$cache_root/pow-solver-$ARCH.tar.xz"
 		rm -f "$cache_root/pow-solver-$ARCH.tar.xz"
 	fi
-	resp=`LD_LIBRARY_PATH="$cache_root:$LD_LIBRARY_PATH" "$cache_path" "$@"`
+	resp=`LD_LIBRARY_PATH="$cache_root" "./pow-solver" "$@"`
 	if [ $? != 0 ]; then
 		echo "Please download the source-code and compile it: https://github.com/TheFlash2k/pwn-chal/tree/master/utilities/pow"
 		exit 1
