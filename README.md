@@ -216,13 +216,14 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | 2004 | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2004) |
 | 1804 | Ubuntu 18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1804) |
 | 1604 | Ubuntu 16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
-| kernel | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
+| kernel | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/kernel) |
 | x86 | theflash2k/pwn-chal:latest with gcc-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86) |
 | x86-cpp | theflash2k/pwn-chal:latest with g++-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86-cpp) |
 | seccomp | theflash2k/pwn-chal:latest with libseccomp-dev installed | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/seccomp) |
 | py38 | python:3.8-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py38) |
 | py311 | python:3.11-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
 | crypto | python:3.11-slim-buster with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
+| sagemath | Using sagemath/sagemath:latest Docker image | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/sagemath) |
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
 | arm | 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
 | arm64 | 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
