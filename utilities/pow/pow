@@ -7,15 +7,17 @@
 set -eu
 
 # Currently only supported is x86_64
+ARCH="x86_64"
 run() {	
 	cache_root=${XDG_CACHE_HOME:-$HOME/.cache}/pow
 	mkdir -p "$cache_root"
 	cache_path=$cache_root/pow-solver
 	if [ ! -e "$cache_path" ]; then
-		curl -sSfLo "$cache_path" "https://github.com/TheFlash2k/pwn-chal/raw/refs/heads/master/utilities/pow/pow-solver"
-		chmod u+x "$cache_path"
+		curl -sSfLo "$cache_path" "https://github.com/TheFlash2k/pwn-chal/raw/refs/heads/master/utilities/pow/pow-solver-$ARCH.tar.xz"
+		cd $cache_path
+		tar -xzf "pow-solver-$ARCH.tar.xz" && rm pow-solver-$ARCH.tar.xz
 	fi
-	resp=`"$cache_path" "$@"`
+	resp=`LD_LIBRARY_PATH="$cache_root:$LD_LIBRARY_PATH" "$cache_path" "$@"`
 	if [ $? != 0 ]; then
 		echo "Please download the source-code and compile it: https://github.com/TheFlash2k/pwn-chal/tree/master/utilities/pow"
 		exit 1
