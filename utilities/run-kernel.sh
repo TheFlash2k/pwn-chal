@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
