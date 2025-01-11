@@ -5,6 +5,19 @@ function info() { echo -e "\e[36m[i]\e[0m $1"; }
 function error() { echo -e "\e[31m[x]\e[0m $1"; exit 1; }
 function warn() { echo -e "\e[33m[!]\e[0m $1"; }
 
+# We need to reset the iptables rules
+if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
+    iptables -F &>/dev/null
+    if [[ $? == 4 ]]; then
+        warn "CAP_NET_ADMIN is not set. Please set that to block outbound connections"
+    else
+        # We will unblock all the rules first:
+        iptables -P INPUT ACCEPT
+        iptables -P FORWARD ACCEPT
+        iptables -P OUTPUT ACCEPT
+    fi
+fi
+
 # Here we will decompress the initramfs
 EXTRACT_DIR="/tmp/initramfs"
 mkdir "$EXTRACT_DIR"
@@ -32,6 +45,7 @@ elif [[ "$MODE" == "stdin" ]]; then
 else
     error "Invalid mode: $MODE"
 fi
+info "Exploit downloaded successfully. Building image."
 chmod +x "$EXTRACT_DIR/exploit"
 
 # Now run iptables and block outbound:
@@ -46,7 +60,6 @@ if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
             info "Blocked all outbound connections."
     fi
 fi
-rm -f /etc/block-outbound.sh
 
 # Compress the initramfs
 find . -print0 \

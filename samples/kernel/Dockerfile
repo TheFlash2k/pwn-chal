@@ -13,7 +13,7 @@ ENV SMEP=0
 ENV VM_MEMORY=128M
 
 # Setup PoW to prevent DoS
-ENV POW=20
+ENV POW=32
 
 # Since pwd is /app, we can use .
 COPY $INITRAMFS .

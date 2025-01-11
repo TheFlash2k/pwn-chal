@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
-rm -- "$0"
+# Only delete this if there's KERNEL isn't set.
+if [ -z "$KERNEL" ]; then rm -- "$0"; fi
 
 iptables -F
 iptables -P INPUT ACCEPT
