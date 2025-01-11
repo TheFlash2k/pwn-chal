@@ -113,11 +113,7 @@ fi
 chmod ugo-w /app/{libc*,ld*,flag.txt,$CHAL_NAME} /flag* /app/flag* &>/dev/null
 
 if [ "$POW" -gt 0 ]; then
-    if [ "$BASE" == "ynetd" ]; then
-        info "Using Proof-of-Work difficulty: $POW"
-    else
-        warn "Proof-of-Work is only supported with ynetd. Ignoring POW."
-    fi
+    info "Using Proof-of-Work difficulty: $POW"
 fi
 
 info "Running a \e[33m/app/run-kernel.sh\e[0m and listening locally on \e[34m$PORT\e[0m"
