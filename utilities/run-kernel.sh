@@ -26,7 +26,8 @@ fi
 mkdir -p "$CHAL_DIR"
 [[ -f "$CHAL_DIR/$INITRAMFS" ]] && rm -f "$CHAL_DIR/$INITRAMFS"
 
-mkdir "$EXTRACT_DIR"
+rm -rf "$EXTRACT_DIR"
+mkdir -p "$EXTRACT_DIR"
 cd "$EXTRACT_DIR"
 cp "/app/$INITRAMFS" .
 gunzip "$INITRAMFS"
