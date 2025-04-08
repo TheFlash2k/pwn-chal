@@ -12,9 +12,7 @@ CHAL_DIR="/chal"
 # We need to reset the iptables rules
 if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
 	iptables -F &>/dev/null
-	if [[ $? == 4 ]]; then
-		warn "CAP_NET_ADMIN is not set. Please set that to block outbound connections"
-	else
+	if [[ $? != 4 ]]; then
 		# We will unblock all the rules first:
 		iptables -P INPUT ACCEPT
 		iptables -P FORWARD ACCEPT
@@ -66,13 +64,9 @@ fi
 
 if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
 	iptables -F &>/dev/null
-	if [[ $? == 4 ]]; then
-		warn "CAP_NET_ADMIN is not set. Please set that to block outbound connections"
-	else
+	if [[ $? != 4 ]]; then
 		/etc/block-outbound.sh &>/dev/null
-		[[ $? != 0 ]] && \
-			warn "Failed to block outbound connections!" || \
-			info "Blocked all outbound connections."
+		[[ $? == 0 ]] && info "Blocked all outbound connections."
 	fi
 fi
 
