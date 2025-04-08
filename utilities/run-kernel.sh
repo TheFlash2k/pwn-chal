@@ -41,19 +41,20 @@ chmod 400 "$EXTRACT_DIR/$flag_name"
 
 # Get the exploit:
 if [[ "$MODE" == "remote" ]]; then
-	info "Please provide the exploit URL: "
+	info "Please provide the exploit URL (Full URL, no redirections): "
 	read EXPLOIT_URL
-	wget "$EXPLOIT_URL" -O "$EXTRACT_DIR$EXPLOIT_PATH"
-	[ $? != 0 ] && rm -f "$EXTRACT_DIR$EXPLOIT_PATH"
+	info "Downloading file from $EXPLOIT_URL"
+	wget --max-redirect 0 "$EXPLOIT_URL" -O "$EXTRACT_DIR$EXPLOIT_PATH" &>/dev/null
 elif [[ "$MODE" == "stdin" ]]; then
 	info "Please enter base64 encoded exploit: "
 	read EXPLOIT_B64
 	info "Exploit downloaded successfully. Building image."
-	echo "$EXPLOIT_B64" | base64 -d > "$EXTRACT_DIR$EXPLOIT_PATH"
-	[ $? != 0 ] && rm -f "$EXTRACT_DIR$EXPLOIT_PATH"
+	echo -n "$EXPLOIT_B64" | base64 -d > "$EXTRACT_DIR$EXPLOIT_PATH"
 else
 	error "Invalid mode: $MODE"
 fi
+
+[ $? != 0 ] && rm -f "$EXTRACT_DIR$EXPLOIT_PATH"
 
 # We check if exploit is non-empty.
 if [ -f "$EXTRACT_DIR$EXPLOIT_PATH" ]; then
