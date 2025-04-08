@@ -23,6 +23,8 @@ DEFAULT_INITRAMFS="initramfs.cpio.gz"
 DEFAULT_KERNEL="vmlinuz"
 DEFAULT_CPU="qemu64"
 DEFAULT_SMP="1"
+DEFAULT_INIT="/init"
+DEFAULT_ROOT="/dev/ram"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
@@ -71,6 +73,14 @@ export INITRAMFS=$(set_default "INITRAMFS")
 export KERNEL=$(set_default "KERNEL")
 export APPEND=$(set_default "APPEND")
 export SMP=$(set_default "SMP")
+export INIT=$(set_default "INIT")
+export ROOT=$(set_default "ROOT")
+
+[[ $SMAP == 1 ]] && SMAP="+smap" || SMAP="nosmap"
+[[ $SMEP == 1 ]] && SMEP="+smep" || SMEP="nosmep"
+[[ $KASLR == 0 ]] && KASLR="nokaslr" || KASLR="kaslr"
+[[ $KPTI == 0 ]] && KPTI="nokpti" || KPTI="kpti=1"
+[[ $PANIC_ON_OOPS == 1 ]] && PANIC_ON_OOPS=" oops=panic panic=-1"
 
 debug "PORT=$PORT"
 debug "LOG_FILE=$LOG_FILE"
@@ -89,6 +99,8 @@ debug "MEMORY=$VM_MEMORY"
 debug "INITRAMFS=$INITRAMFS"
 debug "KERNEL=$KERNEL"
 debug "SMP=$SMP"
+debug "ROOT=$ROOT"
+debug "INIT=$INIT"
 
 shopt -s nocasematch
 [[ "$MODE" != "remote" && "$MODE" != "stdin" ]] && invalid "MODE" "remote/stdin"
@@ -108,9 +120,6 @@ if [[ "$POW" -lt 0 ]] || [[ "$POW" -gt 256 ]]; then
     warn "POW is set to $POW. It should be between 0-256. Defaulting to 0."
     POW=0
 fi
-
-# Just take write permission for everyone on libc*, ld* and $CHAL_NAME
-chmod ugo-w /app/{libc*,ld*,flag.txt,$CHAL_NAME} /flag* /app/flag* &>/dev/null
 
 if [ "$POW" -gt 0 ]; then
     info "Using Proof-of-Work difficulty: $POW"
