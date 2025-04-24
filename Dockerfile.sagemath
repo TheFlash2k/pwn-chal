@@ -23,6 +23,7 @@ COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
 COPY utilities/block-outbound.sh /etc/block-outbound.sh
+COPY utilities/readflag /readflag
 RUN chmod +x /opt/*
 
 # Setting up log stuff

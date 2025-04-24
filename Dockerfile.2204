@@ -1,4 +1,4 @@
-FROM ubuntu:22.04@sha256:3d1556a8a18cf5307b121e0a98e93f1ddf1f3f8e092f1fddfd941254785b95d7
+FROM ubuntu:22.04@sha256:a76d0e9d99f0e91640e35824a6259c93156f0f07b7778ba05808c750e7fa6e68
 
 RUN  mkdir -p /app/
 WORKDIR /app
@@ -17,6 +17,7 @@ COPY utilities/chal /app/chal
 COPY utilities/ynetd /opt/ynetd
 COPY utilities/socat /opt/socat
 COPY utilities/block-outbound.sh /etc/block-outbound.sh
+COPY utilities/readflag /readflag
 RUN chmod +x /opt/*
 
 # Setting up log stuff

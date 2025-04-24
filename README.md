@@ -31,11 +31,12 @@ PORT
 BASE
 START_DIR
 FLAG_FILE
-LOG_FILE
 OVERRIDE_USER
 SETUID_USER
 REDIRECT_STDERR
 NO_FLAG
+ADD_READFLAG
+ROOT_ONLY_FLAG
 OUTBOUND_BLOCK
 POW
 ```
@@ -68,9 +69,6 @@ User can specify the path to the flag file. Needs to be an absolute value as the
 
 | **NOTE**: When using `theflash2k/pwn-chal:windows`, make sure to put flag in `/app/flag.txt` or set the `FLAG_FILE` accordingly. Randomly generated flag files may not work as the flag will be copied from `/app/flag.txt` or `$FLAG_FILE` to `C:\flag.txt`
 
-### LOG_FILE
-The absolute path of the file in which the logs will be stored. If not path is specified, only a file name; the logs will be stored in `/app/<file-name>`
-
 ### OVERRIDE_USER
 By default, the binaries will run in the context of `ctf-player` user. This can be overriden by `OVERRIDE_USER` variable. It can be a valid user. But, if the user doesn't exist, it will default to `root`.
 
@@ -84,6 +82,12 @@ This environment variable will simply allow redirection of stderr through the so
 
 ### NO_FLAG
 This environment variable will simply remove the `$FLAG_FILE`. (Made this specifically for Showdown-based challenges where there's a submitter binary.)
+
+### ADD_READFLAG
+This environment variable will set the 
+
+### ROOT_ONLY_FLAG
+This will set the flag to be read only by root user and no one else. The use-case for this particular flag is when we're trying to use a SUID `readflag` binary. Default `n`
 
 ### OUTBOUND_BLOCK
 This blocks all the outbound connection. This is done using `iptables` so `CAP_NET_ADMIN` is required for the running container. If it is not provided, it doesn't SOFT-EXIT, but rather continues anyways. (Default=`y`)
@@ -209,14 +213,15 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 
 | Tag | Version | Usage |
 | --- | --- | --- |
-| latest | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/latest) |
+| latest | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/latest) |
+| 2504 | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2504) |
 | 2404 | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2404) |
 | 2304 | Ubuntu 23.04@sha256:5a828e28de105c3d7821c4442f0f5d1c52dc16acf4999d5f31a3bc0f03f06edd | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2304) |
 | 2204 | Ubuntu 22.04@sha256:3d1556a8a18cf5307b121e0a98e93f1ddf1f3f8e092f1fddfd941254785b95d7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2204) |
 | 2004 | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2004) |
 | 1804 | Ubuntu 18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1804) |
 | 1604 | Ubuntu 16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
-| kernel | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/kernel) |
+| kernel | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/kernel) |
 | x86 | theflash2k/pwn-chal:latest with gcc-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86) |
 | x86-cpp | theflash2k/pwn-chal:latest with g++-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86-cpp) |
 | seccomp | theflash2k/pwn-chal:latest with libseccomp-dev installed | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/seccomp) |
@@ -225,8 +230,8 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | crypto | python:3.11-slim-buster with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
 | sagemath | Using sagemath/sagemath:latest Docker image | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/sagemath) |
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
-| arm | 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
-| arm64 | 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
+| arm | 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
+| arm64 | 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
 | windows | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef with WINE and XVFB | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/windows) |
 
 ## Known Bugs:

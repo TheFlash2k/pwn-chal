@@ -1,0 +1,8 @@
+FROM theflash2k/pwn-chal:2504
+
+ENV CHAL_NAME=test
+ENV FLAG_FILE=/flag
+ENV ADD_READFLAG=y
+
+COPY ${CHAL_NAME} .
+COPY flag.txt ${FLAG_FILE}

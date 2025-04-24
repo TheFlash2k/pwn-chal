@@ -5,7 +5,6 @@
 rm -f -- "$0"
 
 DEFAULT_PORT=8000
-DEFAULT_LOG_FILE="/var/log/chal.log"
 DEFAULT_FLAG_FILE="/app/flag.txt"
 DEFAULT_CONN_TIME="30"
 DEFAULT_BLOCK_OUTBOUND="y"
@@ -54,7 +53,6 @@ function invalid() {
 
 # Check the variables, if not exists, set to default
 export PORT=$(set_default "PORT")
-export LOG_FILE=$(set_default "LOG_FILE")
 export FLAG_FILE=$(set_default "FLAG_FILE")
 export CONN_TIME=$(set_default "CONN_TIME")
 export BLOCK_OUTBOUND=$(set_default "BLOCK_OUTBOUND")
@@ -83,7 +81,6 @@ export ROOT=$(set_default "ROOT")
 [[ $PANIC_ON_OOPS == 1 ]] && PANIC_ON_OOPS=" oops=panic panic=-1"
 
 debug "PORT=$PORT"
-debug "LOG_FILE=$LOG_FILE"
 debug "FLAG_FILE=$FLAG_FILE"
 debug "CONN_TIME=$CONN_TIME"
 debug "BLOCK_OUTBOUND=$BLOCK_OUTBOUND"

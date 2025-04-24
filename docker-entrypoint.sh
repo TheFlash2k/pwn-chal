@@ -8,7 +8,6 @@ DEFAULT_PORT=8000
 DEFAULT_CHAL_NAME="chal"
 DEFAULT_CHAL_NAME_WINDOWS="chal.exe"
 DEFAULT_BASE="ynetd"
-DEFAULT_LOG_FILE="/var/log/chal.log"
 DEFAULT_START_DIR="/app"
 DEFAULT_FLAG_FILE="/app/flag.txt"
 DEFAULT_REDIRECT_STDERR="y"
@@ -16,6 +15,12 @@ DEFAULT_CONN_TIME="30"
 DEFAULT_FORCE_FLAG_RO="y"
 DEFAULT_BLOCK_OUTBOUND="y"
 DEFAULT_POW="0"
+DEFAULT_ROOT_ONLY_FLAG="n"
+DEFAULT_ADD_READFLAG="n"
+
+# These 2 are used when ADD_READFLAG is set.
+DEFAULT_UID_READFLAG="0"
+DEFAULT_GID_READFLAG="0"
 
 function debug() { [ ! -z "$DEBUG" ] && echo -e "\e[32m[*]\e[0m $1"; }
 function info() { echo -e "\e[36m[i]\e[0m $1"; }
@@ -47,7 +52,6 @@ function invalid() {
 PORT=$(set_default "PORT")
 CHAL_NAME=$(set_default "CHAL_NAME")
 BASE=$(set_default "BASE")
-LOG_FILE=$(set_default "LOG_FILE")
 START_DIR=$(set_default "START_DIR")
 FLAG_FILE=$(set_default "FLAG_FILE")
 REDIRECT_STDERR=$(set_default "REDIRECT_STDERR")
@@ -55,11 +59,14 @@ CONN_TIME=$(set_default "CONN_TIME")
 FORCE_FLAG_RO=$(set_default "FORCE_FLAG_RO")
 BLOCK_OUTBOUND=$(set_default "BLOCK_OUTBOUND")
 POW=$(set_default "POW")
+ROOT_ONLY_FLAG=$(set_default "ROOT_ONLY_FLAG")
+ADD_READFLAG=$(set_default "ADD_READFLAG")
+UID_READFLAG=$(set_default "UID_READFLAG")
+GID_READFLAG=$(set_default "GID_READFLAG")
 
 debug "PORT=$PORT"
 debug "CHAL_NAME=$CHAL_NAME"
 debug "BASE=$BASE"
-debug "LOG_FILE=$LOG_FILE"
 debug "START_DIR=$START_DIR"
 debug "FLAG_FILE=$FLAG_FILE"
 debug "REDIRECT_STDERR=$REDIRECT_STDERR"
@@ -67,6 +74,10 @@ debug "CONN_TIME=$CONN_TIME"
 debug "FORCE_FLAG_RO=$FORCE_FLAG_RO"
 debug "BLOCK_OUTBOUND=$BLOCK_OUTBOUND"
 debug "POW=$POW"
+debug "ROOT_ONLY_FLAG=$ROOT_ONLY_FLAG"
+debug "ADD_READFLAG=$ADD_READFLAG"
+debug "UID_READFLAG=$UID_READFLAG"
+debug "GID_READFLAG=$GID_READFLAG"
 
 # Check if REDIRECT_STDERR is y/n
 shopt -s nocasematch
@@ -80,7 +91,7 @@ if [ -z "$OVERRIDE_USER" ]; then
     RUN_AS="ctf"
 else
     # Check if user exists:
-    if id "$OVERRIDE_USER" >/dev/null 2>&1; then
+    if id "$OVERRIDE_USER" 2>&1 >/dev/null; then
         RUN_AS="$OVERRIDE_USER"
     else
         warn "User $OVERRIDE_USER user doesn't exist. Defaulting to root."
@@ -99,7 +110,7 @@ if [ "$FLAG_FILE" != "$DEFAULT_FLAG_FILE" ]; then
 fi
 
 # Check if the running-container is a python container:
-if [[ "$1" == "IS_PY" ]]; then
+if [[ "$1" == "IS_PY" || "$IS_PY" ]]; then
     debug "Checking if /app/$CHAL_NAME" contains the shebang
     # Check if the first line of `/app/$CHAL_NAME` is not a shebang; add it:
     FIRSTLINE=$(head -n 1 "/app/$CHAL_NAME")
@@ -107,7 +118,7 @@ if [[ "$1" == "IS_PY" ]]; then
         (echo '#!/usr/local/bin/python' | cat - "/app/$CHAL_NAME") > tmp && mv tmp "/app/$CHAL_NAME"
     fi
     INVOKE="/usr/local/bin/python "
-elif [[ "$1" == "IS_SAGE" ]]; then
+elif [[ "$1" == "IS_SAGE" || "$IS_SAGE" ]]; then
     INVOKE="/usr/bin/sage -python "
 fi
 
@@ -165,16 +176,11 @@ if [[ "$1" == "IS_WINDOWS" ]]; then
         xvfb-run -a /opt/ynetd -p $PORT -u "$RUN_AS" -sh n -se "$REDIRECT_STDERR" "WINEDEBUG=-all wine /app/$CHAL_NAME"
     else
         [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
-        (su $RUN_AS -c "xvfb-run -a /opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"wine /app/$CHAL_NAME\"$REDIRECT_STDERR") | tee -a $LOG_FILE
+        (su $RUN_AS -c "xvfb-run -a /opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"wine /app/$CHAL_NAME\"$REDIRECT_STDERR")
     fi
 
     exit 0 # idk
 fi
-
-env > /etc/environment
-
-# Added this specifically for Showdown (No flag, only submitter binary)
-[ ! -z "$NO_FLAG" ] && rm -f "$FLAG_FILE"
 
 # Could be cleaned up but im lazy asf
 if [[ "$BLOCK_OUTBOUND" == "y" ]]; then
@@ -200,25 +206,49 @@ fi
 # Just take write permission for everyone on libc*, ld* and $CHAL_NAME
 chmod ugo-w /app/{libc*,ld*,flag.txt,$CHAL_NAME} /flag* /app/flag* &>/dev/null
 
+# Added this specifically for Showdown (No flag, only submitter binary)
+[ ! -z "$NO_FLAG" ] && rm -f "$FLAG_FILE"
+
+if [[ "$ROOT_ONLY_FLAG" == "y" ]]; then
+    info "Setting the flag to be read-only for root only."
+    chown root:root $FLAG_FILE
+    chmod 400 $FLAG_FILE
+fi
+
+export FLAG_FILE="$FLAG_FILE"
+
+# For ADD_READFLAG
+if [[ "$ADD_READFLAG" == "y" ]]; then
+    info "Setting the flag fetch method to be /readflag"
+    export UID_READFLAG="$UID_READFLAG"
+    export GID_READFLAG="$GID_READFLAG"
+    chown $UID_READFLAG:$GID_READFLAG $FLAG_FILE
+    chmod 400 $FLAG_FILE
+    chmod 4111 /readflag # only suid exec perms
+else
+    rm -f /readflag
+fi
+
 if [ "$POW" -gt 0 ]; then
     if [ "$BASE" == "ynetd" ]; then
         info "Using Proof-of-Work difficulty: $POW"
     else
         warn "Proof-of-Work is only supported with ynetd. Ignoring POW."
     fi
+    LOCAL_POW="$POW"
 fi
+
+env > /etc/environment
 
 info "Running \e[33m$CHAL_NAME\e[0m in \e[32m$(pwd)\e[0m as \e[36m$RUN_AS\e[0m using \e[35m$BASE\e[0m and listening locally on \e[34m$PORT\e[0m"
 if [ "$BASE" == "socat" ]; then
     rm -f /opt/ynetd
     shopt -s nocasematch
-    touch $LOG_FILE
-    chown $RUN_AS:$RUN_AS $LOG_FILE
     [ "$REDIRECT_STDERR" == "y" ] && REDIRECT_STDERR=",stderr" || REDIRECT_STDERR=
-    su $RUN_AS -p -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"$INVOKE/app/$CHAL_NAME\"$REDIRECT_STDERR | tee -a $LOG_FILE"
+    su $RUN_AS -p -c "/opt/socat tcp-l:$PORT,reuseaddr,fork, EXEC:\"$INVOKE/app/$CHAL_NAME\"$REDIRECT_STDERR"
 elif [ "$BASE" == "ynetd" ]; then
     rm -f /opt/socat
-    /opt/ynetd -lt "$CONN_TIME" -u "$RUN_AS" -pow "$POW" -se "$REDIRECT_STDERR" -p $PORT -d $START_DIR "$INVOKE/app/$CHAL_NAME" | tee -a $LOG_FILE
+    /opt/ynetd -lt "$CONN_TIME" -u "$RUN_AS" -pow "$POW" -se "$REDIRECT_STDERR" -p $PORT -d $START_DIR "$INVOKE/app/$CHAL_NAME"
 else
     error "Invalid base: $BASE"
 fi

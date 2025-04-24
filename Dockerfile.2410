@@ -1,11 +1,13 @@
-FROM ubuntu:16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6
+FROM ubuntu:24.10@sha256:02b7410af4f33ca28aad0764e34bb7442ef739ff253ea6c28e008e20f8921c52
 
 RUN  mkdir -p /app/
 WORKDIR /app
 RUN useradd ctf
 
 # Downloading iptables
-RUN apt update && TZ=ASIA/KARACHI \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN rm -rf /var/lib/apt/lists/* && \
+	apt update && \
 	apt install -y iptables && \
 	apt clean -y && \
 	apt autoclean -y && \
