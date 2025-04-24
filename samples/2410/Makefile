@@ -1,4 +1,4 @@
-IMG=pwn-chal:2404-sample
+IMG=pwn-chal:2410-sample
 
 all: chal container
 chal:

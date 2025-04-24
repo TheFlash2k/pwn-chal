@@ -215,6 +215,7 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | --- | --- | --- |
 | latest | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/latest) |
 | 2504 | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2504) |
+| 2410 | Ubuntu 24.10@sha256:02b7410af4f33ca28aad0764e34bb7442ef739ff253ea6c28e008e20f8921c52 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2410) |
 | 2404 | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2404) |
 | 2304 | Ubuntu 23.04@sha256:5a828e28de105c3d7821c4442f0f5d1c52dc16acf4999d5f31a3bc0f03f06edd | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2304) |
 | 2204 | Ubuntu 22.04@sha256:3d1556a8a18cf5307b121e0a98e93f1ddf1f3f8e092f1fddfd941254785b95d7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2204) |
