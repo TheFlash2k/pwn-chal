@@ -1,4 +1,4 @@
-FROM python:3.13-slim-buster@sha256:e98b521460ee75bca92175c16247bdf7275637a8faaeb2bcfa19d879ae5c4b9a
+FROM python:3.13-slim-bullseye@sha256:e98b521460ee75bca92175c16247bdf7275637a8faaeb2bcfa19d879ae5c4b9a
 
 RUN  mkdir -p /app/
 WORKDIR /app
@@ -28,9 +28,6 @@ RUN chmod 740 /var/log/chal.log
 # Other measures
 RUN chmod o-rwx / 2>/dev/null
 RUN chmod 750 /app && chmod +x /app/chal
-
-# Specific to this image
-RUN pip3 --no-cache-dir install pycryptodome==3.23.0
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 CMD ["/docker-entrypoint.sh", "IS_PY"]

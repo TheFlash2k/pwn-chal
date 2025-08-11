@@ -226,9 +226,13 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | x86 | theflash2k/pwn-chal:latest with gcc-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86) |
 | x86-cpp | theflash2k/pwn-chal:latest with g++-multilib installed for 32-bit support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/x86-cpp) |
 | seccomp | theflash2k/pwn-chal:latest with libseccomp-dev installed | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/seccomp) |
-| py38 | python:3.8-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py38) |
-| py311 | python:3.11-slim-buster with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
-| crypto | python:3.11-slim-buster with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
+| py38 | python:3.8-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py38) |
+| py39 | python:3.9-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| py311 | python:3.10-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| py311 | python:3.11-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| py312 | python:3.12-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| py313 | python:3.13-slim-bullseye with my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/py311) |
+| crypto | python:3.13-slim-bullseye with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
 | sagemath | Using sagemath/sagemath:latest Docker image | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/sagemath) |
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
 | arm | 25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
