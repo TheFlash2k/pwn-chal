@@ -213,13 +213,13 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 
 | Tag | Version | Usage |
 | --- | --- | --- |
-| latest | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/latest) |
-| 2504 | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2504) |
-| 2410 | Ubuntu 24.10@sha256:02b7410af4f33ca28aad0764e34bb7442ef739ff253ea6c28e008e20f8921c52 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2410) |
-| 2404 | Ubuntu 24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2404) |
+| latest | Ubuntu 25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/latest) |
+| 2504 | Ubuntu 25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2504) |
+| 2410 | Ubuntu 24.10@sha256:cdf755952ed117f6126ff4e65810bf93767d4c38f5c7185b50ec1f1078b464cc | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2410) |
+| 2404 | Ubuntu 24.04@sha256:4f1db91d9560cf107b5832c0761364ec64f46777aa4ec637cca3008f287c975e | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2404) |
 | 2304 | Ubuntu 23.04@sha256:5a828e28de105c3d7821c4442f0f5d1c52dc16acf4999d5f31a3bc0f03f06edd | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2304) |
 | 2204 | Ubuntu 22.04@sha256:3d1556a8a18cf5307b121e0a98e93f1ddf1f3f8e092f1fddfd941254785b95d7 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2204) |
-| 2004 | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2004) |
+| 2004 | Ubuntu 20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/2004) |
 | 1804 | Ubuntu 18.04@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1804) |
 | 1604 | Ubuntu 16.04@sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6 | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/1604) |
 | kernel | Ubuntu 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/kernel) |
@@ -231,9 +231,9 @@ COPY ${CHAL_NAME} ${CHAL_NAME}
 | crypto | python:3.11-slim-buster with Pycryptodome and my magic | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/crypto) |
 | sagemath | Using sagemath/sagemath:latest Docker image | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/sagemath) |
 | cpp | theflash2k/pwn-chal:latest with libstdc++ for C++ support | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/cpp) |
-| arm | 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
-| arm64 | 25.04@sha256:9a302811bba2ae9533ddae0b563af29c112f1262329e508f13c0c532d5ba7c19 with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
-| windows | Ubuntu 20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef with WINE and XVFB | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/windows) |
+| arm | 25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm) |
+| arm64 | 25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d with QEMU [Also with GDB Remote Debugging] | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/arm64) |
+| windows | Ubuntu 20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214 with WINE and XVFB | [Github](https://github.com/TheFlash2k/pwn-chal/tree/master/samples/windows) |
 
 ## Known Bugs:
 

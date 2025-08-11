@@ -1,4 +1,4 @@
-FROM ubuntu:24.04@sha256:6e75a10070b0fcb0bead763c5118a369bc7cc30dfc1b0749c491bbb21f15c3c7
+FROM ubuntu:25.04@sha256:5487c53773e2a8576213d1a2e18148fe167fabecfe7844724792f63041190d9d
 
 RUN apt update \
     && \

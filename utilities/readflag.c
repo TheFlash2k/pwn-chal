@@ -20,13 +20,13 @@ int main(int argc, char* argv[], char* envp[]) {
     FILE* f = fopen(flag_file, "r");
     if (f == NULL) {
         fprintf(stderr, "[ERROR] - Please contact an administrator. %s failed at trying to open the flag file: %s.", argv[0], flag_file);
-	fprintf(stderr, "[ERROR] - uid: %d, gid: %d\n", uid, gid);
+	    fprintf(stderr, "[ERROR] - uid: %d, gid: %d\n", uid, gid);
         return 1;
     }
     char flag[100];
     if (fgets(flag, sizeof(flag), f) == NULL) {
         fprintf(stderr, "[ERROR] - Please contact an administrator. %s failed at trying to read the flag file: %s.", argv[0], flag_file);
-	fprintf(stderr, "[ERROR] - uid: %d, gid: %d\n", uid, gid);
+	    fprintf(stderr, "[ERROR] - uid: %d, gid: %d\n", uid, gid);
         fclose(f);
         return 1;
     }
