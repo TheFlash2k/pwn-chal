@@ -5,7 +5,12 @@ WORKDIR /app
 RUN useradd ctf
 
 # Downloading iptables
-RUN apt update && TZ=ASIA/KARACHI \
+RUN printf "deb http://archive.debian.org/debian buster main contrib non-free\n" \
+        > /etc/apt/sources.list && \
+    printf "deb http://archive.debian.org/debian buster-updates main contrib non-free\n" \
+        >> /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid && \
+    apt update && TZ=ASIA/KARACHI \
 	apt install -y iptables && \
 	apt clean -y && \
 	apt autoclean -y && \
